@@ -4,59 +4,104 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "1:5318790870837957661",
-      "lastPropertyId": "7:3206231188513422429",
-      "name": "ChecklistItem",
+      "id": "1:8648230550568930890",
+      "lastPropertyId": "5:880841797234752805",
+      "name": "ChecklistTemplate",
       "properties": [
         {
-          "id": "1:6412846179712683893",
+          "id": "1:8685249836206089835",
           "name": "id",
           "type": 6,
           "flags": 1
         },
         {
-          "id": "2:3279190470142145244",
-          "name": "title",
+          "id": "2:7900334577447163456",
+          "name": "name",
           "type": 9
         },
         {
-          "id": "3:6896836776891979758",
-          "name": "description",
+          "id": "3:8100220908699380795",
+          "name": "icon",
           "type": 9
         },
         {
-          "id": "4:6509465600357634271",
-          "name": "isCompleted",
-          "type": 1
+          "id": "5:880841797234752805",
+          "name": "items",
+          "type": 30
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:760418122507219540",
+      "lastPropertyId": "9:7463033015913016986",
+      "name": "DailyCheck",
+      "properties": [
+        {
+          "id": "1:4443178906906748980",
+          "name": "id",
+          "type": 6,
+          "flags": 1
         },
         {
-          "id": "5:6189465586935062073",
+          "id": "3:6903585400888989598",
           "name": "photoPath",
           "type": 9
         },
         {
-          "id": "6:6329099478617741934",
+          "id": "4:1177809183110402804",
+          "name": "isCompleted",
+          "type": 1
+        },
+        {
+          "id": "5:7144970853950663981",
           "name": "createdAt",
           "type": 10
         },
         {
-          "id": "7:3206231188513422429",
+          "id": "6:249654482530110773",
           "name": "completedAt",
           "type": 10
+        },
+        {
+          "id": "7:2684849963781146230",
+          "name": "templateId",
+          "type": 6
+        },
+        {
+          "id": "8:2790563040559063553",
+          "name": "itemTitle",
+          "type": 9
+        },
+        {
+          "id": "9:7463033015913016986",
+          "name": "description",
+          "type": 9
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "1:5318790870837957661",
-  "lastIndexId": "0:0",
+  "lastEntityId": "3:760418122507219540",
+  "lastIndexId": "1:5946032470069021229",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    2148893795691684676
+  ],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    7822958801601830814,
+    512833021320457376,
+    6230307912122380996,
+    463096052628995260,
+    1311239186059830027,
+    8595429245162831938,
+    7224342350068288890,
+    6665087368077960301
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

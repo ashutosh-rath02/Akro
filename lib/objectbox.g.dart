@@ -14,51 +14,86 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
-import 'features/checklist/models/checklist_item.dart';
+import 'features/checklist/models/checklist_template.dart';
+import 'features/checklist/models/daily_check.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 
 final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
-      id: const obx_int.IdUid(1, 5318790870837957661),
-      name: 'ChecklistItem',
-      lastPropertyId: const obx_int.IdUid(7, 3206231188513422429),
+      id: const obx_int.IdUid(1, 8648230550568930890),
+      name: 'ChecklistTemplate',
+      lastPropertyId: const obx_int.IdUid(5, 880841797234752805),
       flags: 0,
       properties: <obx_int.ModelProperty>[
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(1, 6412846179712683893),
+            id: const obx_int.IdUid(1, 8685249836206089835),
             name: 'id',
             type: 6,
             flags: 1),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(2, 3279190470142145244),
-            name: 'title',
+            id: const obx_int.IdUid(2, 7900334577447163456),
+            name: 'name',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(3, 6896836776891979758),
-            name: 'description',
+            id: const obx_int.IdUid(3, 8100220908699380795),
+            name: 'icon',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(4, 6509465600357634271),
-            name: 'isCompleted',
-            type: 1,
-            flags: 0),
+            id: const obx_int.IdUid(5, 880841797234752805),
+            name: 'items',
+            type: 30,
+            flags: 0)
+      ],
+      relations: <obx_int.ModelRelation>[],
+      backlinks: <obx_int.ModelBacklink>[]),
+  obx_int.ModelEntity(
+      id: const obx_int.IdUid(3, 760418122507219540),
+      name: 'DailyCheck',
+      lastPropertyId: const obx_int.IdUid(9, 7463033015913016986),
+      flags: 0,
+      properties: <obx_int.ModelProperty>[
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(5, 6189465586935062073),
+            id: const obx_int.IdUid(1, 4443178906906748980),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(3, 6903585400888989598),
             name: 'photoPath',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(6, 6329099478617741934),
+            id: const obx_int.IdUid(4, 1177809183110402804),
+            name: 'isCompleted',
+            type: 1,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(5, 7144970853950663981),
             name: 'createdAt',
             type: 10,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(7, 3206231188513422429),
+            id: const obx_int.IdUid(6, 249654482530110773),
             name: 'completedAt',
             type: 10,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(7, 2684849963781146230),
+            name: 'templateId',
+            type: 6,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(8, 2790563040559063553),
+            name: 'itemTitle',
+            type: 9,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(9, 7463033015913016986),
+            name: 'description',
+            type: 9,
             flags: 0)
       ],
       relations: <obx_int.ModelRelation>[],
@@ -100,41 +135,91 @@ Future<obx.Store> openStore(
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
       entities: _entities,
-      lastEntityId: const obx_int.IdUid(1, 5318790870837957661),
-      lastIndexId: const obx_int.IdUid(0, 0),
+      lastEntityId: const obx_int.IdUid(3, 760418122507219540),
+      lastIndexId: const obx_int.IdUid(1, 5946032470069021229),
       lastRelationId: const obx_int.IdUid(0, 0),
       lastSequenceId: const obx_int.IdUid(0, 0),
-      retiredEntityUids: const [],
+      retiredEntityUids: const [2148893795691684676],
       retiredIndexUids: const [],
-      retiredPropertyUids: const [],
+      retiredPropertyUids: const [
+        7822958801601830814,
+        512833021320457376,
+        6230307912122380996,
+        463096052628995260,
+        1311239186059830027,
+        8595429245162831938,
+        7224342350068288890,
+        6665087368077960301
+      ],
       retiredRelationUids: const [],
       modelVersion: 5,
       modelVersionParserMinimum: 5,
       version: 1);
 
   final bindings = <Type, obx_int.EntityDefinition>{
-    ChecklistItem: obx_int.EntityDefinition<ChecklistItem>(
+    ChecklistTemplate: obx_int.EntityDefinition<ChecklistTemplate>(
         model: _entities[0],
-        toOneRelations: (ChecklistItem object) => [],
-        toManyRelations: (ChecklistItem object) => {},
-        getId: (ChecklistItem object) => object.id,
-        setId: (ChecklistItem object, int id) {
+        toOneRelations: (ChecklistTemplate object) => [],
+        toManyRelations: (ChecklistTemplate object) => {},
+        getId: (ChecklistTemplate object) => object.id,
+        setId: (ChecklistTemplate object, int id) {
           object.id = id;
         },
-        objectToFB: (ChecklistItem object, fb.Builder fbb) {
-          final titleOffset = fbb.writeString(object.title);
-          final descriptionOffset = fbb.writeString(object.description);
+        objectToFB: (ChecklistTemplate object, fb.Builder fbb) {
+          final nameOffset = fbb.writeString(object.name);
+          final iconOffset = fbb.writeString(object.icon);
+          final itemsOffset = fbb.writeList(
+              object.items.map(fbb.writeString).toList(growable: false));
+          fbb.startTable(6);
+          fbb.addInt64(0, object.id);
+          fbb.addOffset(1, nameOffset);
+          fbb.addOffset(2, iconOffset);
+          fbb.addOffset(4, itemsOffset);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (obx.Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+          final nameParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 6, '');
+          final iconParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 8, '');
+          final itemsParam = const fb.ListReader<String>(
+                  fb.StringReader(asciiOptimization: true),
+                  lazy: false)
+              .vTableGet(buffer, rootOffset, 12, []);
+          final object = ChecklistTemplate(
+              name: nameParam, icon: iconParam, items: itemsParam)
+            ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+
+          return object;
+        }),
+    DailyCheck: obx_int.EntityDefinition<DailyCheck>(
+        model: _entities[1],
+        toOneRelations: (DailyCheck object) => [],
+        toManyRelations: (DailyCheck object) => {},
+        getId: (DailyCheck object) => object.id,
+        setId: (DailyCheck object, int id) {
+          object.id = id;
+        },
+        objectToFB: (DailyCheck object, fb.Builder fbb) {
           final photoPathOffset = object.photoPath == null
               ? null
               : fbb.writeString(object.photoPath!);
-          fbb.startTable(8);
+          final itemTitleOffset = fbb.writeString(object.itemTitle);
+          final descriptionOffset = object.description == null
+              ? null
+              : fbb.writeString(object.description!);
+          fbb.startTable(10);
           fbb.addInt64(0, object.id);
-          fbb.addOffset(1, titleOffset);
-          fbb.addOffset(2, descriptionOffset);
+          fbb.addOffset(2, photoPathOffset);
           fbb.addBool(3, object.isCompleted);
-          fbb.addOffset(4, photoPathOffset);
-          fbb.addInt64(5, object.createdAt.millisecondsSinceEpoch);
-          fbb.addInt64(6, object.completedAt?.millisecondsSinceEpoch);
+          fbb.addInt64(4, object.createdAt.millisecondsSinceEpoch);
+          fbb.addInt64(5, object.completedAt?.millisecondsSinceEpoch);
+          fbb.addInt64(6, object.templateId);
+          fbb.addOffset(7, itemTitleOffset);
+          fbb.addOffset(8, descriptionOffset);
           fbb.finish(fbb.endTable());
           return object.id;
         },
@@ -142,28 +227,32 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final buffer = fb.BufferContext(fbData);
           final rootOffset = buffer.derefObject(0);
           final completedAtValue =
-              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 16);
-          final titleParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGet(buffer, rootOffset, 6, '');
+              const fb.Int64Reader().vTableGetNullable(buffer, rootOffset, 14);
+          final templateIdParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 16, 0);
+          final itemTitleParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGet(buffer, rootOffset, 18, '');
           final descriptionParam =
               const fb.StringReader(asciiOptimization: true)
-                  .vTableGet(buffer, rootOffset, 8, '');
+                  .vTableGetNullable(buffer, rootOffset, 20);
+          final photoPathParam = const fb.StringReader(asciiOptimization: true)
+              .vTableGetNullable(buffer, rootOffset, 8);
           final isCompletedParam =
               const fb.BoolReader().vTableGet(buffer, rootOffset, 10, false);
-          final photoPathParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGetNullable(buffer, rootOffset, 12);
+          final completedAtParam = completedAtValue == null
+              ? null
+              : DateTime.fromMillisecondsSinceEpoch(completedAtValue);
           final createdAtParam = DateTime.fromMillisecondsSinceEpoch(
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 14, 0));
-          final object = ChecklistItem(
-              title: titleParam,
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 12, 0));
+          final object = DailyCheck(
+              templateId: templateIdParam,
+              itemTitle: itemTitleParam,
               description: descriptionParam,
-              isCompleted: isCompletedParam,
               photoPath: photoPathParam,
+              isCompleted: isCompletedParam,
+              completedAt: completedAtParam,
               createdAt: createdAtParam)
-            ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
-            ..completedAt = completedAtValue == null
-                ? null
-                : DateTime.fromMillisecondsSinceEpoch(completedAtValue);
+            ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
 
           return object;
         })
@@ -172,33 +261,56 @@ obx_int.ModelDefinition getObjectBoxModel() {
   return obx_int.ModelDefinition(model, bindings);
 }
 
-/// [ChecklistItem] entity fields to define ObjectBox queries.
-class ChecklistItem_ {
-  /// See [ChecklistItem.id].
+/// [ChecklistTemplate] entity fields to define ObjectBox queries.
+class ChecklistTemplate_ {
+  /// See [ChecklistTemplate.id].
   static final id =
-      obx.QueryIntegerProperty<ChecklistItem>(_entities[0].properties[0]);
+      obx.QueryIntegerProperty<ChecklistTemplate>(_entities[0].properties[0]);
 
-  /// See [ChecklistItem.title].
-  static final title =
-      obx.QueryStringProperty<ChecklistItem>(_entities[0].properties[1]);
+  /// See [ChecklistTemplate.name].
+  static final name =
+      obx.QueryStringProperty<ChecklistTemplate>(_entities[0].properties[1]);
 
-  /// See [ChecklistItem.description].
-  static final description =
-      obx.QueryStringProperty<ChecklistItem>(_entities[0].properties[2]);
+  /// See [ChecklistTemplate.icon].
+  static final icon =
+      obx.QueryStringProperty<ChecklistTemplate>(_entities[0].properties[2]);
 
-  /// See [ChecklistItem.isCompleted].
-  static final isCompleted =
-      obx.QueryBooleanProperty<ChecklistItem>(_entities[0].properties[3]);
+  /// See [ChecklistTemplate.items].
+  static final items = obx.QueryStringVectorProperty<ChecklistTemplate>(
+      _entities[0].properties[3]);
+}
 
-  /// See [ChecklistItem.photoPath].
+/// [DailyCheck] entity fields to define ObjectBox queries.
+class DailyCheck_ {
+  /// See [DailyCheck.id].
+  static final id =
+      obx.QueryIntegerProperty<DailyCheck>(_entities[1].properties[0]);
+
+  /// See [DailyCheck.photoPath].
   static final photoPath =
-      obx.QueryStringProperty<ChecklistItem>(_entities[0].properties[4]);
+      obx.QueryStringProperty<DailyCheck>(_entities[1].properties[1]);
 
-  /// See [ChecklistItem.createdAt].
+  /// See [DailyCheck.isCompleted].
+  static final isCompleted =
+      obx.QueryBooleanProperty<DailyCheck>(_entities[1].properties[2]);
+
+  /// See [DailyCheck.createdAt].
   static final createdAt =
-      obx.QueryDateProperty<ChecklistItem>(_entities[0].properties[5]);
+      obx.QueryDateProperty<DailyCheck>(_entities[1].properties[3]);
 
-  /// See [ChecklistItem.completedAt].
+  /// See [DailyCheck.completedAt].
   static final completedAt =
-      obx.QueryDateProperty<ChecklistItem>(_entities[0].properties[6]);
+      obx.QueryDateProperty<DailyCheck>(_entities[1].properties[4]);
+
+  /// See [DailyCheck.templateId].
+  static final templateId =
+      obx.QueryIntegerProperty<DailyCheck>(_entities[1].properties[5]);
+
+  /// See [DailyCheck.itemTitle].
+  static final itemTitle =
+      obx.QueryStringProperty<DailyCheck>(_entities[1].properties[6]);
+
+  /// See [DailyCheck.description].
+  static final description =
+      obx.QueryStringProperty<DailyCheck>(_entities[1].properties[7]);
 }

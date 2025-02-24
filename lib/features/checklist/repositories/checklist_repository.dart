@@ -1,44 +1,49 @@
-import 'package:objectbox/objectbox.dart';
-
-import '../models/checklist_item.dart';
+// lib/features/checklist/repositories/checklist_repository.dart
+import 'package:Akro/objectbox.g.dart';
+import '../models/checklist_template.dart';
+import '../models/daily_check.dart';
 import '../../../core/services/objectbox_store.dart';
 
 class ChecklistRepository {
-  final Box<ChecklistItem> _box = objectBox.checklistBox;
+  final Box<ChecklistTemplate> _templateBox = objectBox.templateBox;
+  final Box<DailyCheck> _checkBox = objectBox.checkBox;
 
-  // Add a new item
-  int add(ChecklistItem item) {
-    return _box.put(item);
+  // Template operations
+  List<ChecklistTemplate> getAllTemplates() => _templateBox.getAll();
+
+  int addTemplate(ChecklistTemplate template) => _templateBox.put(template);
+
+  bool deleteTemplate(int id) => _templateBox.remove(id);
+
+  ChecklistTemplate? getTemplateById(int id) => _templateBox.get(id);
+
+  // Daily check operations
+  List<DailyCheck> getChecksByTemplate(int templateId) {
+    return _checkBox
+        .query(DailyCheck_.templateId.equals(templateId))
+        .build()
+        .find();
   }
 
-  // Get all items
-  List<ChecklistItem> getAll() {
-    return _box.getAll();
-  }
+  int addCheck(DailyCheck check) => _checkBox.put(check);
 
-  // Update an item
-  bool update(ChecklistItem item) {
-    return _box.put(item) > 0;
-  }
+  bool deleteCheck(int id) => _checkBox.remove(id);
 
-  // Delete an item
-  bool delete(int id) {
-    return _box.remove(id);
-  }
+  bool updateCheck(DailyCheck check) => _checkBox.put(check) > 0;
 
-  // Get item by id
-  ChecklistItem? getById(int id) {
-    return _box.get(id);
-  }
+  // Clear old checks (older than 24 hours)
+  void clearOldChecks() {
+    final yesterday = DateTime.now().subtract(const Duration(hours: 24));
+    final oldChecks =
+        _checkBox
+            .query(
+              DailyCheck_.createdAt.lessThan(yesterday.millisecondsSinceEpoch),
+            )
+            .build()
+            .find();
 
-  // Mark item as completed
-  bool markAsCompleted(int id) {
-    final item = _box.get(id);
-    if (item != null) {
-      item.isCompleted = true;
-      item.completedAt = DateTime.now();
-      return _box.put(item) > 0;
+    for (final check in oldChecks) {
+      _checkBox.remove(check.id);
     }
-    return false;
   }
 }

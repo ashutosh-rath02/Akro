@@ -1,18 +1,30 @@
+// lib/features/checklist/screens/add_checklist_item_screen.dart
 import 'package:flutter/material.dart';
-import '../../../shared/widgets/custom_button.dart';
-import '../../../shared/widgets/custom_text_field.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
+import '../../../core/services/photo_service.dart';
+import '../providers/checklist_provider.dart';
+import '../models/daily_check.dart';
+import '../../../core/constants/app_colors.dart';
 
-class AddChecklistItemScreen extends StatefulWidget {
-  const AddChecklistItemScreen({super.key});
+class AddChecklistItemScreen extends ConsumerStatefulWidget {
+  final int templateId;
+
+  const AddChecklistItemScreen({super.key, required this.templateId});
 
   @override
-  State<AddChecklistItemScreen> createState() => _AddChecklistItemScreenState();
+  ConsumerState<AddChecklistItemScreen> createState() =>
+      _AddChecklistItemScreenState();
 }
 
-class _AddChecklistItemScreenState extends State<AddChecklistItemScreen> {
+class _AddChecklistItemScreenState
+    extends ConsumerState<AddChecklistItemScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _photoService = PhotoService();
+  String? _photoPath;
+  bool _isCapturing = false;
 
   @override
   void dispose() {
@@ -21,9 +33,28 @@ class _AddChecklistItemScreenState extends State<AddChecklistItemScreen> {
     super.dispose();
   }
 
-  void _saveItem() {
+  Future<void> _takePhoto() async {
+    setState(() => _isCapturing = true);
+    try {
+      final photoPath = await _photoService.capturePhoto();
+      if (photoPath != null) {
+        setState(() => _photoPath = photoPath);
+      }
+    } finally {
+      setState(() => _isCapturing = false);
+    }
+  }
+
+  void _saveItem() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // TODO: Implement save functionality
+      final check = DailyCheck(
+        templateId: widget.templateId,
+        itemTitle: _titleController.text,
+        photoPath: _photoPath,
+        isCompleted: _photoPath != null,
+      );
+
+      ref.read(dailyChecksProvider(widget.templateId).notifier).addCheck(check);
       Navigator.pop(context);
     }
   }
@@ -32,15 +63,19 @@ class _AddChecklistItemScreenState extends State<AddChecklistItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Add New Item')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomTextField(
+              TextFormField(
                 controller: _titleController,
-                label: 'Title',
+                decoration: const InputDecoration(
+                  labelText: 'Item Title',
+                  border: OutlineInputBorder(),
+                ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Please enter a title';
@@ -49,13 +84,69 @@ class _AddChecklistItemScreenState extends State<AddChecklistItemScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              CustomTextField(
+
+              TextFormField(
                 controller: _descriptionController,
-                label: 'Description',
+                decoration: const InputDecoration(
+                  labelText: 'Description (Optional)',
+                  border: OutlineInputBorder(),
+                ),
                 maxLines: 3,
               ),
               const SizedBox(height: 24),
-              CustomButton(text: 'Save Item', onPressed: _saveItem),
+
+              // Photo Section
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (_photoPath != null) ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            File(_photoPath!),
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      ElevatedButton.icon(
+                        onPressed: _isCapturing ? null : _takePhoto,
+                        icon:
+                            _isCapturing
+                                ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                                : const Icon(Icons.camera_alt),
+                        label: Text(
+                          _photoPath == null ? 'Take Photo' : 'Retake Photo',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              ElevatedButton(
+                onPressed: _saveItem,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: AppColors.primary,
+                ),
+                child: const Text('Save Item'),
+              ),
             ],
           ),
         ),

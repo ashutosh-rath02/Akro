@@ -1,14 +1,15 @@
 import 'package:objectbox/objectbox.dart';
 
 @Entity()
-class ChecklistItem {
+class DailyCheck {
   @Id()
   int id = 0;
 
-  String title;
-  String description;
-  bool isCompleted;
+  int templateId;
+  String itemTitle;
+  String? description;
   String? photoPath;
+  bool isCompleted;
 
   @Property(type: PropertyType.date)
   DateTime createdAt;
@@ -16,11 +17,13 @@ class ChecklistItem {
   @Property(type: PropertyType.date)
   DateTime? completedAt;
 
-  ChecklistItem({
-    required this.title,
-    this.description = '',
-    this.isCompleted = false,
+  DailyCheck({
+    required this.templateId,
+    required this.itemTitle,
+    this.description,
     this.photoPath,
+    this.isCompleted = false,
+    DateTime? completedAt,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 }

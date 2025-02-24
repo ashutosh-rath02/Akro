@@ -1,4 +1,3 @@
-// lib/features/checklist/screens/add_checklist_item_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
@@ -36,12 +35,24 @@ class _AddChecklistItemScreenState
   Future<void> _takePhoto() async {
     setState(() => _isCapturing = true);
     try {
-      final photoPath = await _photoService.capturePhoto();
-      if (photoPath != null) {
-        setState(() => _photoPath = photoPath);
+      final photoPath = await _photoService.capturePhoto(context: context);
+
+      if (mounted) {
+        setState(() {
+          _photoPath = photoPath;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error taking photo: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error capturing photo: ${e.toString()}')),
+        );
       }
     } finally {
-      setState(() => _isCapturing = false);
+      if (mounted) {
+        setState(() => _isCapturing = false);
+      }
     }
   }
 
@@ -50,6 +61,10 @@ class _AddChecklistItemScreenState
       final check = DailyCheck(
         templateId: widget.templateId,
         itemTitle: _titleController.text,
+        description:
+            _descriptionController.text.isNotEmpty
+                ? _descriptionController.text
+                : null,
         photoPath: _photoPath,
         isCompleted: _photoPath != null,
       );
@@ -62,6 +77,7 @@ class _AddChecklistItemScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: ValueKey('add_item_screen_${_photoPath ?? 'no_photo'}'),
       appBar: AppBar(title: const Text('Add New Item')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -95,7 +111,6 @@ class _AddChecklistItemScreenState
               ),
               const SizedBox(height: 24),
 
-              // Photo Section
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

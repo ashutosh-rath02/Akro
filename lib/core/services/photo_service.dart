@@ -1,21 +1,46 @@
-// lib/core/services/photo_service.dart
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
+import 'permission_service.dart';
 
 class PhotoService {
   final ImagePicker _picker = ImagePicker();
 
-  Future<String?> capturePhoto() async {
+  Future<String?> capturePhoto({required BuildContext context}) async {
     try {
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 80,
-      );
+      XFile? photo;
+
+      try {
+        photo = await _picker.pickImage(
+          source: ImageSource.camera,
+          imageQuality: 80,
+          preferredCameraDevice: CameraDevice.rear,
+        );
+      } catch (e) {
+        if (e.toString().contains('permission') ||
+            e.toString().contains('denied')) {
+          final shouldRetry = await PermissionService.handleDeniedPermission(
+            context,
+            Permission.camera,
+            'Camera',
+          );
+
+          if (shouldRetry) {
+            photo = await _picker.pickImage(
+              source: ImageSource.camera,
+              imageQuality: 80,
+              preferredCameraDevice: CameraDevice.rear,
+            );
+          }
+        } else {
+          rethrow;
+        }
+      }
 
       if (photo != null) {
-        // Save to app directory
         final directory = await getApplicationDocumentsDirectory();
         final fileName =
             'checklist_${DateTime.now().millisecondsSinceEpoch}.jpg';
@@ -26,7 +51,7 @@ class PhotoService {
       }
       return null;
     } catch (e) {
-      print('Error capturing photo: $e');
+      debugPrint('Error capturing photo: $e');
       return null;
     }
   }
@@ -38,7 +63,7 @@ class PhotoService {
         await file.delete();
       }
     } catch (e) {
-      print('Error deleting photo: $e');
+      debugPrint('Error deleting photo: $e');
     }
   }
 }

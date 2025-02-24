@@ -1,4 +1,3 @@
-// lib/features/checklist/screens/template_checks_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/checklist_template.dart';
@@ -14,11 +13,21 @@ class TemplateChecksScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final checks = ref.watch(dailyChecksProvider(template.id));
+    final checksProvider = dailyChecksProvider(template.id);
+    final checks = ref.watch(checksProvider);
+
+    final completedChecks = checks.where((check) => check.isCompleted).toList();
+    final completedCount = completedChecks.length;
+    final totalCount = template.items.length;
+
+    final progress = totalCount > 0 ? completedCount / totalCount : 0.0;
 
     return Scaffold(
+      key: ValueKey(
+        'template_checks_${template.id}_${completedCount}_$totalCount',
+      ),
       appBar: AppBar(
-        title: Text(template.name),
+        title: RepaintBoundary(child: Text(template.name)),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -37,8 +46,63 @@ class TemplateChecksScreen extends ConsumerWidget {
                 () => DailyCheck(templateId: template.id, itemTitle: itemTitle),
           );
 
-          return CheckItemCard(check: check);
+          return CheckItemCard(
+            key: ValueKey('check_${check.id}_${check.isCompleted}'),
+            check: check,
+          );
         },
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, -1),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  RepaintBoundary(
+                    child: Text(
+                      '$completedCount/$totalCount',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.grey.withOpacity(0.2),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.success,
+                      ),
+                      minHeight: 8,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              RepaintBoundary(
+                child: Text(
+                  '$completedCount of $totalCount items completed',
+                  style: const TextStyle(color: AppColors.textSecondary),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -55,17 +119,23 @@ class TemplateChecksScreen extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'About ${template.name}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                RepaintBoundary(
+                  child: Text(
+                    'About ${template.name}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text('${template.items.length} items to check'),
+                RepaintBoundary(
+                  child: Text('${template.items.length} items to check'),
+                ),
                 const SizedBox(height: 8),
-                const Text('Items will be reset after 24 hours'),
+                const RepaintBoundary(
+                  child: Text('Items will be reset after 24 hours'),
+                ),
               ],
             ),
           ),
@@ -89,27 +159,41 @@ class CheckItemCard extends ConsumerWidget {
               MaterialPageRoute(
                 builder: (context) => CheckDetailScreen(check: check),
               ),
-            ),
+            ).then((_) {
+              ref.refresh(dailyChecksProvider(check.templateId));
+            }),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      check.isCompleted
-                          ? AppColors.success.withOpacity(0.1)
-                          : AppColors.warning.withOpacity(0.1),
-                ),
-                child: Icon(
-                  check.isCompleted ? Icons.check_circle : Icons.timer_outlined,
-                  size: 16,
-                  color:
-                      check.isCompleted ? AppColors.success : AppColors.warning,
+              GestureDetector(
+                onTap: () {
+                  // Toggle the completion state
+                  ref
+                      .read(dailyChecksProvider(check.templateId).notifier)
+                      .toggleCheck(check.id);
+                },
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color:
+                        check.isCompleted
+                            ? AppColors.success.withOpacity(0.1)
+                            : AppColors.warning.withOpacity(0.1),
+                  ),
+                  child: Icon(
+                    check.isCompleted
+                        ? Icons.check_circle
+                        : Icons.timer_outlined,
+                    size: 16,
+                    color:
+                        check.isCompleted
+                            ? AppColors.success
+                            : AppColors.warning,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -117,25 +201,29 @@ class CheckItemCard extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      check.itemTitle,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        decoration:
-                            check.isCompleted
-                                ? TextDecoration.lineThrough
-                                : null,
+                    RepaintBoundary(
+                      child: Text(
+                        check.itemTitle,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          decoration:
+                              check.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                        ),
                       ),
                     ),
                     if (check.photoPath != null)
                       const Padding(
                         padding: EdgeInsets.only(top: 4),
-                        child: Text(
-                          'Photo verified',
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
+                        child: RepaintBoundary(
+                          child: Text(
+                            'Photo verified',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
@@ -143,12 +231,14 @@ class CheckItemCard extends ConsumerWidget {
                 ),
               ),
               if (check.isCompleted)
-                Text(
-                  'Completed',
-                  style: TextStyle(
-                    color: AppColors.success,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                RepaintBoundary(
+                  child: Text(
+                    'Completed',
+                    style: TextStyle(
+                      color: AppColors.success,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
             ],

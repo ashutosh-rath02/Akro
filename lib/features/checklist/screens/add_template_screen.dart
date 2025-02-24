@@ -1,4 +1,3 @@
-// lib/features/checklist/screens/add_template_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/checklist_template.dart';
@@ -15,7 +14,7 @@ class _AddTemplateScreenState extends ConsumerState<AddTemplateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _itemsController = TextEditingController();
-  String _selectedIcon = '0xe88a'; // Default icon code
+  String _selectedIcon = '0xe88a';
 
   final List<String> _iconCodes = [
     '0xe88a', // home

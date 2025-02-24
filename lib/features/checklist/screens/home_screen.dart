@@ -14,28 +14,34 @@ class HomeScreen extends ConsumerWidget {
     final templates = ref.watch(templatesProvider);
 
     return Scaffold(
+      key: ValueKey('home_screen_${templates.length}'),
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
           const SliverAppBar(
-            title: Text('Daily Checks'),
+            title: RepaintBoundary(child: Text('Daily Checks')),
             centerTitle: true,
             floating: true,
             snap: true,
           ),
           SliverPadding(
-            padding: const EdgeInsets.only(top: 8), // Reduced top padding
+            padding: const EdgeInsets.only(top: 8),
             sliver:
                 templates.isEmpty
                     ? const SliverFillRemaining(
                       child: Center(
-                        child: Text('Add your first checklist template'),
+                        child: RepaintBoundary(
+                          child: Text('Add your first checklist template'),
+                        ),
                       ),
                     )
                     : SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final template = templates[index];
-                        return TemplateCard(template: template);
+                        return TemplateCard(
+                          key: ValueKey('template_${template.id}'),
+                          template: template,
+                        );
                       }, childCount: templates.length),
                     ),
           ),
@@ -48,7 +54,10 @@ class HomeScreen extends ConsumerWidget {
               MaterialPageRoute(
                 builder: (context) => const AddTemplateScreen(),
               ),
-            ),
+            ).then((_) {
+              // Force refresh of templates when returning from add screen
+              ref.refresh(templatesProvider);
+            }),
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add),
       ),
@@ -103,19 +112,23 @@ class TemplateCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        template.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                      RepaintBoundary(
+                        child: Text(
+                          template.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        '${template.items.length} items',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
+                      RepaintBoundary(
+                        child: Text(
+                          '${template.items.length} items',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     ],

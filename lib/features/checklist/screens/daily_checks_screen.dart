@@ -1,4 +1,3 @@
-// lib/features/checklist/screens/daily_checks_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/checklist_template.dart';
@@ -19,7 +18,7 @@ class DailyChecksScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(template.name),
+        title: RepaintBoundary(child: Text(template.name)),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -50,57 +49,60 @@ class DailyChecksScreen extends ConsumerWidget {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                LinearProgressIndicator(
-                  value:
-                      checks.where((c) => c.isCompleted).length /
-                      template.items.length,
-                  backgroundColor: Theme.of(
-                    context,
-                  ).primaryColor.withOpacity(0.1),
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).primaryColor,
-                  ),
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${checks.where((c) => c.isCompleted).length} of ${template.items.length} completed',
-                  style: const TextStyle(color: AppColors.textSecondary),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
       bottomNavigationBar: SafeArea(
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, -1),
+              ),
+            ],
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              LinearProgressIndicator(
-                value:
-                    checks.where((c) => c.isCompleted).length /
-                    template.items.length,
-                backgroundColor: Theme.of(
-                  context,
-                ).primaryColor.withOpacity(0.1),
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).primaryColor,
-                ),
-                minHeight: 8,
-                borderRadius: BorderRadius.circular(4),
+              // Clearer progress indicator with explicit count
+              Row(
+                children: [
+                  RepaintBoundary(
+                    child: Text(
+                      '${checks.where((c) => c.isCompleted).length}/${template.items.length}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: LinearProgressIndicator(
+                      value:
+                          template.items.isEmpty
+                              ? 0
+                              : checks.where((c) => c.isCompleted).length /
+                                  template.items.length,
+                      backgroundColor: Colors.grey.withOpacity(0.2),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.success,
+                      ),
+                      minHeight: 8,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
-              Text(
-                '${checks.where((c) => c.isCompleted).length} of ${template.items.length} completed',
-                style: const TextStyle(color: AppColors.textSecondary),
+              RepaintBoundary(
+                child: Text(
+                  '${checks.where((c) => c.isCompleted).length} of ${template.items.length} items completed',
+                  style: const TextStyle(color: AppColors.success),
+                ),
               ),
             ],
           ),
@@ -110,13 +112,13 @@ class DailyChecksScreen extends ConsumerWidget {
   }
 }
 
-class DailyCheckCard extends StatelessWidget {
+class DailyCheckCard extends ConsumerWidget {
   final DailyCheck check;
 
   const DailyCheckCard({super.key, required this.check});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       width: double.infinity,
@@ -135,35 +137,47 @@ class DailyCheckCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color:
-                        check.isCompleted
-                            ? AppColors.success.withOpacity(0.1)
-                            : AppColors.warning.withOpacity(0.1),
-                  ),
-                  child: Icon(
-                    check.isCompleted
-                        ? Icons.check_circle
-                        : Icons.timer_outlined,
-                    size: 16,
-                    color:
-                        check.isCompleted
-                            ? AppColors.success
-                            : AppColors.warning,
+                GestureDetector(
+                  onTap: () {
+                    // Toggle completion status
+                    ref
+                        .read(dailyChecksProvider(check.templateId).notifier)
+                        .toggleCheck(check.id);
+                  },
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color:
+                          check.isCompleted
+                              ? AppColors.success.withOpacity(0.1)
+                              : AppColors.warning.withOpacity(0.1),
+                    ),
+                    child: Icon(
+                      check.isCompleted
+                          ? Icons.check_circle
+                          : Icons.timer_outlined,
+                      size: 16,
+                      color:
+                          check.isCompleted
+                              ? AppColors.success
+                              : AppColors.warning,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    check.itemTitle,
-                    style: TextStyle(
-                      fontSize: 16,
-                      decoration:
-                          check.isCompleted ? TextDecoration.lineThrough : null,
+                  child: RepaintBoundary(
+                    child: Text(
+                      check.itemTitle,
+                      style: TextStyle(
+                        fontSize: 16,
+                        decoration:
+                            check.isCompleted
+                                ? TextDecoration.lineThrough
+                                : null,
+                      ),
                     ),
                   ),
                 ),

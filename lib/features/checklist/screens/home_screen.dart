@@ -1,9 +1,9 @@
+import 'package:Akro/features/checklist/models/checklist_template.dart';
+import 'package:Akro/features/checklist/screens/template_checks_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../checklist/providers/checklist_provider.dart';
-import '../../checklist/models/checklist_template.dart';
 import '../../checklist/screens/add_template_screen.dart';
-import '../../checklist/screens/template_checks_screen.dart';
 import '../../../core/constants/app_colors.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -18,11 +18,17 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          const SliverAppBar(
-            title: RepaintBoundary(child: Text('Daily Checks')),
+          SliverAppBar(
+            title: const RepaintBoundary(child: Text('Daily Checks')),
             centerTitle: true,
             floating: true,
             snap: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+              ),
+            ],
           ),
           SliverPadding(
             padding: const EdgeInsets.only(top: 8),

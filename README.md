@@ -7,7 +7,7 @@ Akro is a Flutter application designed to help people manage and verify importan
 Many people experience anxiety wondering if they've properly turned off appliances, locked doors, or secured their home when leaving. This "did I remember to...?" worry can be distracting during work or travel. Akro solves this problem by:
 
 1. Providing a structured checklist system
-2. Enabling photo verification for visual proof
+2. Enabling optional photo verification for visual proof
 3. Organizing checklists into templates for different scenarios (home, office, etc.)
 4. Automatically clearing verifications after 24 hours for the next day's use
 
@@ -21,6 +21,7 @@ Akro is built using:
 - **Riverpod** for state management
 - **ObjectBox** for local database storage
 - **Image Picker** for camera integration
+- **Permission Handler** for permission management
 
 The app follows a feature-first architecture with the following structure:
 
@@ -51,13 +52,13 @@ lib/
 #### Daily Checks
 
 - View all items from a template
-- Mark items as completed with photo verification
+- Mark items as completed with or without photo verification
 - Add descriptions to items for more details
 - Automatic 24-hour reset of checks
 
 #### Photo Verification
 
-- Take photos directly in the app
+- Take photos directly in the app (optional feature)
 - Photos are stored locally on device
 - Visual confirmation provides peace of mind
 
@@ -95,16 +96,17 @@ Represents a specific item being checked:
 
 - [x] Template creation with custom icons
 - [x] Checklist item management
-- [x] Photo verification
+- [x] Photo verification (optional)
 - [x] Local database persistence
-- [x] Basic UI implementation
+- [x] Modern UI implementation
 - [x] Daily check status tracking
+- [x] Permission handling (camera)
+- [x] Marking items as complete without requiring photos
+- [x] Progress indicators showing completion status
 
 ### Pending Features & Improvements
 
-- [ ] Resolve issue of after taking photo and storing all the text gets disturbed and distorted(use a different package maybe)
 - [ ] User settings (dark mode, notification preferences)
-- [ ] Add permission settings request for camera and geolocation
 - [ ] Geolocation-based reminders
 - [ ] Cloud backup and sync
 - [ ] Sharing templates with others

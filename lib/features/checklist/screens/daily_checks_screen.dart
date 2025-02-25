@@ -67,7 +67,6 @@ class DailyChecksScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Clearer progress indicator with explicit count
               Row(
                 children: [
                   RepaintBoundary(

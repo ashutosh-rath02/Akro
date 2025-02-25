@@ -1,4 +1,3 @@
-// lib/features/checklist/repositories/checklist_repository.dart
 import 'package:Akro/objectbox.g.dart';
 import '../models/checklist_template.dart';
 import '../models/daily_check.dart';
@@ -8,7 +7,6 @@ class ChecklistRepository {
   final Box<ChecklistTemplate> _templateBox = objectBox.templateBox;
   final Box<DailyCheck> _checkBox = objectBox.checkBox;
 
-  // Template operations
   List<ChecklistTemplate> getAllTemplates() => _templateBox.getAll();
 
   int addTemplate(ChecklistTemplate template) => _templateBox.put(template);
@@ -17,7 +15,6 @@ class ChecklistRepository {
 
   ChecklistTemplate? getTemplateById(int id) => _templateBox.get(id);
 
-  // Daily check operations
   List<DailyCheck> getChecksByTemplate(int templateId) {
     return _checkBox
         .query(DailyCheck_.templateId.equals(templateId))
@@ -31,7 +28,6 @@ class ChecklistRepository {
 
   bool updateCheck(DailyCheck check) => _checkBox.put(check) > 0;
 
-  // Clear old checks (older than 24 hours)
   void clearOldChecks() {
     final yesterday = DateTime.now().subtract(const Duration(hours: 24));
     final oldChecks =

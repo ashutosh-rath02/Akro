@@ -60,14 +60,12 @@ class DailyChecksNotifier extends StateNotifier<List<DailyCheck>> {
 
   void loadChecks() {
     try {
-      // Get the existing checks for this template
       final existingChecks =
           objectBox.checkBox
               .query(DailyCheck_.templateId.equals(templateId))
               .build()
               .find();
 
-      // Create a new list to avoid reference issues
       state = [...existingChecks];
     } catch (e) {
       debugPrint('Error loading checks: $e');
@@ -77,17 +75,14 @@ class DailyChecksNotifier extends StateNotifier<List<DailyCheck>> {
 
   void addCheck(DailyCheck check) {
     try {
-      // Make sure we're not duplicating checks for the same item
       final existingCheckIndex = state.indexWhere(
         (c) => c.itemTitle == check.itemTitle,
       );
 
-      // If it exists, update it instead of creating a new one
       if (existingCheckIndex >= 0) {
         check.id = state[existingCheckIndex].id;
       }
 
-      // Update the database and reload
       objectBox.checkBox.put(check);
       loadChecks();
     } catch (e) {
@@ -99,17 +94,14 @@ class DailyChecksNotifier extends StateNotifier<List<DailyCheck>> {
     try {
       final check = objectBox.checkBox.get(checkId);
       if (check != null) {
-        // Toggle the completion status
         check.isCompleted = !check.isCompleted;
 
-        // Update timestamp only when marking as complete
         if (check.isCompleted) {
           check.completedAt = DateTime.now();
         } else {
           check.completedAt = null;
         }
 
-        // Save and reload
         objectBox.checkBox.put(check);
         loadChecks();
       }
